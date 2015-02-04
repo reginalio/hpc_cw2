@@ -9,9 +9,29 @@
 
 int main(int argc, char *argv[])
 {	
+
+	int n;
+	if(argc<2){
+		n = 512; 	// Default number of samples
+	}else if(atoi(argv[1]) >= 0){
+		n = atoi(argv[1]);
+	}else{
+		fprintf(stderr, "%s : Entered numSamples is negative, error=%s.", argv[0], strerror(errno));
+		exit(1);
+	}
+	
+
+	
 	while(1){
 		// Buffer containing one stereo sample sample (left and right, both 16 bit).
-		int16_t samples[2];
+			// Buffer size 
+		int16_t* samples = (int16_t*) malloc (sizeof(samples)*n*2);
+		if(samples == NULL) {
+			fprintf(stderr, "%s : unable to allocate buffer, error=%s.", argv[0], strerror(errno));
+			exit(1);
+		}
+		
+		// int16_t samples[2];
 		unsigned cbBuffer=sizeof(samples);	// size in bytes of  one stereo sample (4 bytes)
 		
 		// Read one sample from input
@@ -37,6 +57,7 @@ int main(int argc, char *argv[])
 		}else if(done!=cbBuffer){
 			fprintf(stderr, "%s : Could not read requested number of bytes from stream.\n", argv[0]);
 		}
+		free(samples);
 	}
 
 	return 0;
